@@ -16,6 +16,15 @@
         "NSMicrophoneUsageDescription": "This app needs access to your microphone for audio calls",
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to send images",
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "linkings": {
+        "prefixes": [
+          "mobile://",
+          "com.chatdav.app://",
+          "exp+mobile://",
+          "exp://"
+        ],
+        "excludeFromBackup": []
       }
     },
     "android": {

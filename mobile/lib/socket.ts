@@ -3,12 +3,14 @@ import { io, Socket } from "socket.io-client";
 import { QueryClient } from "@tanstack/react-query";
 import { Chat, Message, MessageSender } from "@/types";
 import * as Sentry from "@sentry/react-native";
+// Use mock WebRTC for Expo Go compatibility
 import {
   RTCPeerConnection,
   RTCSessionDescription,
   mediaDevices,
   MediaStream,
-} from "react-native-webrtc";
+  RTCIceCandidate,
+} from "./webrtc-mock";
 
 const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3000";
 
@@ -195,7 +197,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       if (offer) {
         const { peerConnection } = get();
         if (peerConnection) {
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+          await peerConnection.setRemoteDescription(new (RTCSessionDescription as any)(offer));
           const answer = await peerConnection.createAnswer();
           await peerConnection.setLocalDescription(answer);
           socket.emit("call:accept", { callId, answer: peerConnection.localDescription });
@@ -206,7 +208,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     socket.on("call:accepted", async ({ callId, answer }: { callId: string; answer?: any }) => {
       const { peerConnection, call } = get();
       if (peerConnection && answer) {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        await peerConnection.setRemoteDescription(new (RTCSessionDescription as any)(answer));
       }
       set((state) => ({
         call: state.call ? { ...state.call, isAccepted: true } : null
@@ -226,7 +228,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       const { peerConnection } = get();
       if (peerConnection) {
         try {
-          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+          await peerConnection.addIceCandidate(new (RTCIceCandidate as any)(candidate));
         } catch (error) {
           console.error("Error adding ICE candidate:", error);
         }
@@ -334,12 +336,14 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       set({ localStream: stream });
 
       // Create peer connection
-      const pc = new RTCPeerConnection(rtcConfig) as any;
+      const pc = new (RTCPeerConnection as any)(rtcConfig);
       
       // Add local tracks
-      stream.getTracks().forEach(track => {
-        pc.addTrack(track, stream);
-      });
+      if (stream) {
+        stream.getTracks().forEach((track: any) => {
+          pc.addTrack(track, stream);
+        });
+      }
 
       // Handle remote stream
       pc.ontrack = (event: any) => {
@@ -392,12 +396,14 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       set({ localStream: stream });
 
       // Create peer connection
-      const pc = new RTCPeerConnection(rtcConfig) as any;
+      const pc = new (RTCPeerConnection as any)(rtcConfig);
       
       // Add local tracks
-      stream.getTracks().forEach(track => {
-        pc.addTrack(track, stream);
-      });
+      if (stream) {
+        stream.getTracks().forEach((track: any) => {
+          pc.addTrack(track, stream);
+        });
+      }
 
       // Handle remote stream
       pc.ontrack = (event: any) => {

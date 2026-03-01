@@ -130,15 +130,17 @@ const ChatDetailScreen = () => {
   };
 
   const handleAudioCall = () => {
-    if (participantId) {
-      startCall(participantId, "audio", chatId);
-    }
+    Alert.alert("Coming Soon", "Audio calling will be available soon!");
+    // if (participantId) {
+    //   startCall(participantId, "audio", chatId);
+    // }
   };
 
   const handleVideoCall = () => {
-    if (participantId) {
-      startCall(participantId, "video", chatId);
-    }
+    Alert.alert("Coming Soon", "Video calling will be available soon!");
+    // if (participantId) {
+    //   startCall(participantId, "video", chatId);
+    // }
   };
 
   const handleFilePick = async () => {
