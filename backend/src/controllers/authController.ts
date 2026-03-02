@@ -24,6 +24,7 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
 export async function authCallback(req: Request, res: Response, next: NextFunction) {
   try {
     const { userId: clerkId } = getAuth(req);
+    console.log("authCallback - clerkId:", clerkId);
 
     if (!clerkId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -31,10 +32,12 @@ export async function authCallback(req: Request, res: Response, next: NextFuncti
     }
 
     let user = await User.findOne({ clerkId });
+    console.log("authCallback - existing user:", user);
 
     if (!user) {
       // get user info from clerk and save to db
       const clerkUser = await clerkClient.users.getUser(clerkId);
+      console.log("authCallback - clerkUser:", clerkUser);
 
       user = await User.create({
         clerkId,
@@ -44,10 +47,12 @@ export async function authCallback(req: Request, res: Response, next: NextFuncti
         email: clerkUser.emailAddresses[0]?.emailAddress,
         avatar: clerkUser.imageUrl,
       });
+      console.log("authCallback - created user:", user);
     }
 
     res.json(user);
   } catch (error) {
+    console.error("authCallback error:", error);
     res.status(500);
     next(error);
   }
