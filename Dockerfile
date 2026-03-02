@@ -6,7 +6,7 @@ WORKDIR /app
 # build web frontend
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/bun.lock* ./
-RUN bun install --frozen-lockfile
+RUN bun install
 COPY frontend/ ./
 
 ARG VITE_CLERK_PUBLISHABLE_KEY
@@ -18,7 +18,7 @@ RUN bun run build
 # install backend dependencies
 WORKDIR /app/backend
 COPY backend/package.json backend/bun.lock* ./
-RUN bun install --frozen-lockfile
+RUN bun install
 COPY backend/ ./
 
 # expose port
