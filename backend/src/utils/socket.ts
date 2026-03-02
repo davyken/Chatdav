@@ -20,13 +20,27 @@ interface Call {
 const activeCalls: Map<string, Call> = new Map();
 
 export const initializeSocket = (httpServer: HttpServer) => {
-  const allowedOrigins = [
-    "http://localhost:8081", // Expo mobile
-    "http://localhost:5173", // Vite web dev
-    process.env.FRONTEND_URL, // production
-  ].filter(Boolean) as string[];
+  // Allow all origins in development for mobile app testing
+  const isDevelopment = process.env.NODE_ENV !== "production";
 
-  const io = new SocketServer(httpServer, { cors: { origin: allowedOrigins } });
+  const allowedOrigins = isDevelopment
+    ? ["http://localhost:8081", "http://localhost:5173", "exp://*", "http://*", "https://*"] // allow all in dev
+    : [
+        "http://localhost:8081", // Expo mobile
+        "http://localhost:5173", // Vite web dev
+        process.env.FRONTEND_URL, // production
+      ].filter(Boolean) as string[];
+
+  const io = new SocketServer(httpServer, { 
+    cors: { 
+      origin: allowedOrigins,
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+    allowEIO3: true,
+    pingTimeout: 60000,
+    pingInterval: 25000,
+  });
 
   // verify socket connection - if the user is authenticated, we will store the user id in the socket
 

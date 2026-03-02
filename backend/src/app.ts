@@ -12,11 +12,16 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:8081", // expo mobile
-  "http://localhost:5173", // vite web devs
-  process.env.FRONTEND_URL!, // production
-].filter(Boolean);
+// Allow all origins in development for mobile app testing
+const isDevelopment = process.env.NODE_ENV !== "production";
+
+const allowedOrigins = isDevelopment
+  ? ["http://localhost:8081", "http://localhost:5173", "exp://*", "http://*", "https://*"] // allow all in dev
+  : [
+      "http://localhost:8081", // expo mobile
+      "http://localhost:5173", // vite web devs
+      process.env.FRONTEND_URL!, // production
+    ].filter(Boolean);
 
 app.use(
   cors({
