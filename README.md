@@ -248,7 +248,7 @@ backend/
 ```typescript
 {
   _id: ObjectId,
-  members: ObjectId[],     // User references
+  members: ObjectId[],     
   createdAt: Date,
   updatedAt: Date
 }
