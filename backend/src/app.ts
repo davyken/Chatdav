@@ -53,10 +53,10 @@ app.use(errorHandler);
 
 // serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../../web/dist")));
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
   app.get("/{*any}", (_, res) => {
-    res.sendFile(path.join(__dirname, "../../web/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   });
 }
 
