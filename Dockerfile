@@ -4,10 +4,10 @@ FROM oven/bun:latest
 WORKDIR /app
 
 # build web frontend
-WORKDIR /app/web
-COPY web/package.json web/bun.lock* ./
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/bun.lock* ./
 RUN bun install --frozen-lockfile
-COPY web/ ./
+COPY frontend/ ./
 
 ARG VITE_CLERK_PUBLISHABLE_KEY
 ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
