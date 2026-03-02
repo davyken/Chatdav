@@ -10,9 +10,11 @@ function useUserSync() {
     mutate: syncUser,
     isPending,
     isSuccess,
+    error,
   } = useMutation({
     mutationFn: async () => {
       const token = await getToken();
+      console.log("useUserSync - token:", token ? "present" : "missing");
       const res = await api.post(
         "/auth/callback",
         {},
@@ -22,14 +24,19 @@ function useUserSync() {
       );
       return res.data;
     },
+    onError: (err) => {
+      console.error("useUserSync - error:", err);
+    },
   });
 
   useEffect(() => {
+    console.log("useUserSync - isSignedIn:", isSignedIn, "isPending:", isPending, "isSuccess:", isSuccess);
     if (isSignedIn && !isPending && !isSuccess) {
+      console.log("useUserSync - calling syncUser");
       syncUser();
     }
   }, [isSignedIn, syncUser, isPending, isSuccess]);
 
-  return { isSynced: isSuccess, isSyncing: isPending };
+  return { isSynced: isSuccess, isSyncing: isPending, error };
 }
 export default useUserSync;
