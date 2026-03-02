@@ -235,7 +235,7 @@ backend/
 ```typescript
 {
   _id: ObjectId,
-  clerkId: string,        // Clerk authentication ID
+  clerkId: string,        
   name: string,
   email: string,
   avatar: string,
