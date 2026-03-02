@@ -15,11 +15,13 @@ export function NewChatModal({ onStartChat, isPending, isOpen, onClose }) {
     onClose();
   };
 
-  const searchResults = allUsers.filter((u) => {
-    if (!searchQuery.trim()) return false;
-    const query = searchQuery.toLowerCase();
-    return u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query);
-  });
+  // Show all users when no search query, filter when searching
+  const displayUsers = searchQuery.trim()
+    ? allUsers.filter((u) => {
+        const query = searchQuery.toLowerCase();
+        return u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query);
+      })
+    : allUsers;
 
   return (
     <dialog className={`modal ${isOpen ? "modal-open" : ""}`}>
@@ -40,13 +42,13 @@ export function NewChatModal({ onStartChat, isPending, isOpen, onClose }) {
           />
         </div>
         <div className="max-h-72 overflow-y-auto">
-          {searchResults.length === 0 ? (
+          {displayUsers.length === 0 ? (
             <div className="py-8 text-center text-base-content/60 text-sm">
-              {searchQuery ? "No users found" : "Start typing to search"}
+              {searchQuery ? "No users found" : "No users available"}
             </div>
           ) : (
             <div className="space-y-2">
-              {searchResults.map((u) => (
+              {displayUsers.map((u) => (
                 <button
                   key={u._id}
                   onClick={() => handleStartChat(u._id)}
