@@ -15,13 +15,21 @@ export const protectRoute = [
       // since we call requireAuth() this if check is not necessary
       // if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
 
+      console.log("protectRoute - clerkId:", clerkId);
+      
       const user = await User.findOne({ clerkId });
-      if (!user) return res.status(404).json({ message: "User not found" });
+      console.log("protectRoute - user found:", user);
+      
+      if (!user) {
+        console.log("User not found in database for clerkId:", clerkId);
+        return res.status(404).json({ message: "User not found - please sign in again" });
+      }
 
       req.userId = user._id.toString();
 
       next();
     } catch (error) {
+      console.error("protectRoute error:", error);
       res.status(500);
       next(error);
     }

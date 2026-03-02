@@ -15,6 +15,7 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     name: {
       type: String,
@@ -27,6 +28,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     avatar: {
       type: String,
@@ -37,5 +39,10 @@ const UserSchema = new Schema<IUser>(
     timestamps: true,
   }
 );
+
+// Log when user is created
+UserSchema.post("save", function (doc) {
+  console.log("User saved to database:", doc._id, doc.email);
+});
 
 export const User = mongoose.model("User", UserSchema);
