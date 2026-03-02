@@ -31,7 +31,16 @@ export const initializeSocket = (httpServer: HttpServer) => {
         process.env.FRONTEND_URL, // production
       ].filter(Boolean) as string[];
 
-  const io = new SocketServer(httpServer, { cors: { origin: allowedOrigins } });
+  const io = new SocketServer(httpServer, { 
+    cors: { 
+      origin: allowedOrigins,
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+    allowEIO3: true,
+    pingTimeout: 60000,
+    pingInterval: 25000,
+  });
 
   // verify socket connection - if the user is authenticated, we will store the user id in the socket
 

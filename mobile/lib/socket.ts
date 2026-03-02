@@ -14,6 +14,8 @@ import {
 
 const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3000";
 
+console.log("Socket URL:", SOCKET_URL);
+
 // WebRTC configuration
 const rtcConfig = {
   iceServers: [
@@ -76,12 +78,27 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     if (existingSocket) existingSocket.disconnect();
 
-    const socket = io(SOCKET_URL, { auth: { token } });
+    const socket = io(SOCKET_URL, { 
+      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ["websocket", "polling"], // Try websocket first, fallback to polling
+    });
 
     socket.on("connect", () => {
       console.log("Socket connected, id:", socket.id);
       Sentry.logger.info("Socket connected", { socketId: socket.id });
       set({ isConnected: true });
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error.message);
+      Sentry.logger.error("Socket connection error", { 
+        message: error.message,
+        url: SOCKET_URL 
+      });
     });
 
     socket.on("disconnect", () => {
