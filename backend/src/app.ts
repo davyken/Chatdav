@@ -20,15 +20,16 @@ const allowedOrigins = isDevelopment
   : [
       "http://localhost:8081", // expo mobile
       "http://localhost:5173", // vite web devs
-      process.env.FRONTEND_URL!, // production
-    ].filter(Boolean);
+      process.env.FRONTEND_URL || "", // production frontend
+    ].filter((origin): origin is string => !!origin);
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // allow credentials from client (cookies, authorization headers, etc.)
-  })
-);
+// In production, also allow any mobile app origins
+const corsOptions: cors.CorsOptions = {
+  origin: isDevelopment ? "*" : allowedOrigins,
+  credentials: true, // allow credentials from client (cookies, authorization headers, etc.)
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json()); // parses incoming JSON request bodies
 app.use(clerkMiddleware());

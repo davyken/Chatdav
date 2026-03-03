@@ -12,7 +12,8 @@ import {
   RTCIceCandidate,
 } from "./webrtc-mock";
 
-const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3000";
+// Use the same API URL as axios for consistency
+const SOCKET_URL = process.env.EXPO_PUBLIC_API_URL || process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3000";
 
 console.log("Socket URL:", SOCKET_URL);
 
