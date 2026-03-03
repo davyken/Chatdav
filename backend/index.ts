@@ -14,10 +14,6 @@ connectDB()
     // @ts-ignore - Node.js types issue with listen overload
     httpServer.listen(PORT, "0.0.0.0", () => {
       console.log("Server is running on PORT:", PORT);
-      console.log("Server is accessible at:");
-      console.log("  - http://localhost:", PORT);
-      console.log("  - http://127.0.0.1:", PORT);
-      console.log("  - http://<your-local-ip>:", PORT);
     });
   })
   .catch((error) => {

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_API_URL;
+const SOCKET_URL = import.meta.env.VITE_API_URL || "";
 
 // WebRTC configuration
 const rtcConfig = {
@@ -10,6 +10,8 @@ const rtcConfig = {
     { urls: "stun:stun1.l.google.com:19302" },
   ]
 };
+
+console.log("Socket URL configured:", SOCKET_URL);
 
 export const useSocketStore = create((set, get) => ({
   socket: null,

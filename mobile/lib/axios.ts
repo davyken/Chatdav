@@ -3,7 +3,8 @@ import * as Sentry from "@sentry/react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import { useCallback } from "react";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
+// Use the production API URL in production, fallback to localhost for development
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000";
 
 console.log("API URL:", API_URL);
 
