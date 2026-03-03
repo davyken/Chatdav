@@ -12,20 +12,17 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
-// Allow all origins in development for mobile app testing
-const isDevelopment = process.env.NODE_ENV !== "production";
-
-const allowedOrigins = isDevelopment
-  ? ["http://localhost:8081", "http://localhost:5173", "exp://*", "http://*", "https://*"] // allow all in dev
-  : [
-      "http://localhost:8081", // expo mobile
-      "http://localhost:5173", // vite web devs
-      process.env.FRONTEND_URL || "", // production frontend
-    ].filter((origin): origin is string => !!origin);
+// Allow specific origins for production
+const allowedOrigins = [
+  "http://localhost:8081", // Expo mobile
+  "http://localhost:5173", // Vite web dev
+  "https://chatdav-2aa5.vercel.app", // Production frontend on Vercel
+  "https://chatdav-2aa5.vercel.app/", // With trailing slash
+];
 
 // In production, also allow any mobile app origins
 const corsOptions: cors.CorsOptions = {
-  origin: allowedOrigins, // Use specific origins instead of "*" to allow credentials
+  origin: allowedOrigins,
   credentials: true, // allow credentials from client (cookies, authorization headers, etc.)
 };
 
