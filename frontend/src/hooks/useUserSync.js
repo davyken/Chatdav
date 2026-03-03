@@ -1,10 +1,12 @@
 import { useAuth } from "@clerk/clerk-react";
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import api from "../lib/axios";
 
 function useUserSync() {
   const { isSignedIn, getToken } = useAuth();
+  const queryClient = useQueryClient();
+  const hasSynced = useRef(false);
 
   const {
     mutate: syncUser,
@@ -14,7 +16,6 @@ function useUserSync() {
   } = useMutation({
     mutationFn: async () => {
       const token = await getToken();
-      console.log("useUserSync - token:", token ? "present" : "missing");
       const res = await api.post(
         "/auth/callback",
         {},
@@ -24,18 +25,26 @@ function useUserSync() {
       );
       return res.data;
     },
-    onError: (err) => {
-      console.error("useUserSync - error:", err);
+    onSuccess: (data) => {
+      // Invalidate queries to refresh user data
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["chats"] });
     },
   });
 
   useEffect(() => {
-    console.log("useUserSync - isSignedIn:", isSignedIn, "isPending:", isPending, "isSuccess:", isSuccess);
-    if (isSignedIn && !isPending && !isSuccess) {
-      console.log("useUserSync - calling syncUser");
+    // Only sync if user is signed in and hasn't synced yet
+    if (isSignedIn && !hasSynced.current) {
+      hasSynced.current = true;
       syncUser();
     }
-  }, [isSignedIn, syncUser, isPending, isSuccess]);
+    
+    // Reset hasSynced when user signs out
+    if (!isSignedIn) {
+      hasSynced.current = false;
+    }
+  }, [isSignedIn, syncUser]);
 
   return { isSynced: isSuccess, isSyncing: isPending, error };
 }

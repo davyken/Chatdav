@@ -13,7 +13,8 @@ export async function getChats(req: AuthRequest, res: Response, next: NextFuncti
       .sort({ lastMessageAt: -1 });
 
     const formattedChats = chats.map((chat) => {
-      const otherParticipant = chat.participants.find((p) => p._id.toString() !== userId);
+      const participants = chat.participants as unknown as { _id: { toString(): string }; name: string; email: string; avatar: string }[];
+      const otherParticipant = participants.find((p) => p._id.toString() !== userId);
 
       return {
         _id: chat._id,
