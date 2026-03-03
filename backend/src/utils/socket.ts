@@ -20,16 +20,13 @@ interface Call {
 const activeCalls: Map<string, Call> = new Map();
 
 export const initializeSocket = (httpServer: HttpServer) => {
-  // Allow all origins in development for mobile app testing
-  const isDevelopment = process.env.NODE_ENV !== "production";
-
-  const allowedOrigins = isDevelopment
-    ? ["http://localhost:8081", "http://localhost:5173", "exp://*", "http://*", "https://*"] // allow all in dev
-    : [
-        "http://localhost:8081", // Expo mobile
-        "http://localhost:5173", // Vite web dev
-        process.env.FRONTEND_URL, // production
-      ].filter(Boolean) as string[];
+  // Allow specific origins for production
+  const allowedOrigins = [
+    "http://localhost:8081",
+    "http://localhost:5173",
+    "exp://*",
+    "https://chatdav-2aa5.vercel.app",
+  ];
 
   const io = new SocketServer(httpServer, { 
     cors: { 
