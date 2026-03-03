@@ -25,7 +25,7 @@ const allowedOrigins = isDevelopment
 
 // In production, also allow any mobile app origins
 const corsOptions: cors.CorsOptions = {
-  origin: isDevelopment ? "*" : allowedOrigins,
+  origin: allowedOrigins, // Use specific origins instead of "*" to allow credentials
   credentials: true, // allow credentials from client (cookies, authorization headers, etc.)
 };
 

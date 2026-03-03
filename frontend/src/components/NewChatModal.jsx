@@ -6,7 +6,7 @@ import { useUsers } from "../hooks/useUsers";
 export function NewChatModal({ onStartChat, isPending, isOpen, onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { onlineUsers } = useSocketStore();
-  const { data: allUsers = [] } = useUsers();
+  const { data: allUsers = [], isLoading, error } = useUsers();
   const isOnline = (id) => onlineUsers.has(id);
 
   const handleStartChat = (participantId) => {
@@ -42,7 +42,15 @@ export function NewChatModal({ onStartChat, isPending, isOpen, onClose }) {
           />
         </div>
         <div className="max-h-72 overflow-y-auto">
-          {displayUsers.length === 0 ? (
+          {isLoading ? (
+            <div className="py-8 text-center">
+              <span className="loading loading-spinner loading-md" />
+            </div>
+          ) : error ? (
+            <div className="py-8 text-center text-error">
+              <p>Error loading users</p>
+            </div>
+          ) : displayUsers.length === 0 ? (
             <div className="py-8 text-center text-base-content/60 text-sm">
               {searchQuery ? "No users found" : "No users available"}
             </div>

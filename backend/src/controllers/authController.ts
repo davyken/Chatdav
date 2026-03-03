@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../middleware/auth";
 import { User } from "../models/User";
 import { clerkClient, getAuth } from "@clerk/express";
@@ -21,13 +21,15 @@ export async function getMe(req: AuthRequest, res: Response, next: NextFunction)
   }
 }
 
-export async function authCallback(req: Request, res: Response, next: NextFunction) {
+export async function authCallback(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const { userId: clerkId } = getAuth(req);
+    // requireAuth middleware already validated the token, get clerkId from auth object
+    const auth = getAuth(req);
+    const clerkId = (auth as { userId?: string }).userId;
     console.log("authCallback - clerkId:", clerkId);
 
     if (!clerkId) {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized - invalid token" });
       return;
     }
 
@@ -53,7 +55,7 @@ export async function authCallback(req: Request, res: Response, next: NextFuncti
     res.json(user);
   } catch (error) {
     console.error("authCallback error:", error);
-    res.status(500);
-    next(error);
+    const message = error instanceof Error ? error.message : "Internal server error";
+    res.status(500).json({ message });
   }
 }
